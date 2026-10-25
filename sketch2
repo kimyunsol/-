@@ -1,11 +1,19 @@
 // 배열 선언
 int[] starX = {100, 200, 300};
+float circleX = 200;
+float circleVX = 0;      
+float friction = 0.88;  
+float triangleAngle = 0;
 
 void setup() {
   size(400, 400);
+  rectMode(CENTER);
+}
+
+void draw() {
   background(100, 100, 120);
  
-  // 사용자 정의 함수
+  // 사용자 정의 함수 (별)
   drawStars();
 
   // 바다 선 2개
@@ -22,27 +30,62 @@ void setup() {
     line(0, y, 400, y);
   }
 
-  // 사각형
+  //사각형
   noStroke();
-  fill(200);
-  rectMode(CENTER);
+ 
+  if (mouseX >= 180 && mouseX <= 220 && mouseY >= 180 && mouseY <= 300) {
+    fill(255, 150, 50);
+  } else {
+    fill(200);
+  }
   rect(200, 240, 40, 120);
 
-  // 사용자 정의 도형
+  // 삼각형
+  triangleAngle += 0.05;
+  float cx = 200;    
+  float cy = 170;    
+
+  float x1 = -30, y1 = 30;  
+  float x2 = 30,  y2 = 30;  
+  float x3 = 0,   y3 = -30;
+
+  float cosA = cos(triangleAngle);
+  float sinA = sin(triangleAngle);
+
+  float rx1 = cx + (x1 * cosA - y1 * sinA);
+  float ry1 = cy + (x1 * sinA + y1 * cosA);
+
+  float rx2 = cx + (x2 * cosA - y2 * sinA);
+  float ry2 = cy + (x2 * sinA + y2 * cosA);
+
+  float rx3 = cx + (x3 * cosA - y3 * sinA);
+  float ry3 = cy + (x3 * sinA + y3 * cosA);
+
   fill(220, 50, 50);
   beginShape();
-    vertex(170, 180);
-    vertex(230, 180);
-    vertex(200, 140);
+    vertex(rx1, ry1);
+    vertex(rx2, ry2);
+    vertex(rx3, ry3);
   endShape(CLOSE);
 
   // 원호
   fill(255, 255, 150);
   arc(200, 150, 150, 150, PI, TWO_PI);
 
-  // 원
+//원
+  float targetX = width / 2 + sin(frameCount * 0.03) * 120;
+ 
+  float acceleration = (targetX - circleX) * 0.1;
+  circleVX += acceleration;
+  circleVX *= friction;
+  circleX += circleVX;
+
+  //진동
+  float circleY = 60 + sin(frameCount * 0.1) * 20;
+
+  // 원 그리기
   fill(255, 240, 180);
-  ellipse(60, 60, 50, 50);
+  ellipse(circleX, circleY, 50, 50);
 
   // 문자열
   fill(255);
