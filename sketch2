@@ -1,0 +1,56 @@
+//배경
+size(400, 400);
+background(100, 100, 120);
+
+//별 3개
+strokeWeight(10);
+for (int i = 0; i < 3; i = i + 1) {
+  if (i == 0) {
+    stroke(255, 200, 0);
+  } else {
+    stroke(255);
+  }
+  point(100 + i * 100, 60);
+}
+
+//바다 선 2개
+strokeWeight(7);
+for (int y = 320; y <= 360; y = y + 40) {
+  switch (y) {
+    case 320:
+      stroke(100, 150, 250);
+      break;
+    default:
+      stroke(20, 50, 150);
+      break;
+  }
+  line(0, y, 400, y);
+}
+
+//사각형
+noStroke();
+fill(200);
+rectMode(CENTER);
+rect(200, 240, 40,120);
+
+//사용자 정의 도형
+fill(220, 50, 50);
+beginShape();
+  vertex(170, 180);
+  vertex(230, 180);
+  vertex(200, 140);
+endShape(CLOSE);
+
+//원호
+fill(255, 255, 150);
+arc(200, 150, 150, 150, PI, TWO_PI);
+
+//원
+fill(255, 240, 180);
+ellipse(60, 60, 50, 50);
+
+//문자열
+fill(255);
+textSize(30);
+textAlign(CENTER);
+text("NIGHT", 200, 390);
