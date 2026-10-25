@@ -5,13 +5,16 @@ float circleVX = 0;
 float friction = 0.88;  
 float triangleAngle = 0;
 
+//배경색 변수
+color bgColor = color(100, 100, 120);
+
 void setup() {
   size(400, 400);
   rectMode(CENTER);
 }
 
 void draw() {
-  background(100, 100, 120);
+  background(bgColor);
  
   // 사용자 정의 함수 (별)
   drawStars();
@@ -30,10 +33,12 @@ void draw() {
     line(0, y, 400, y);
   }
 
-  //사각형
+  // 사각형
   noStroke();
  
-  if (mouseX >= 180 && mouseX <= 220 && mouseY >= 180 && mouseY <= 300) {
+  if (mousePressed) { //색상 변경
+    fill(255, 100, 100);
+  } else if (mouseX >= 180 && mouseX <= 220 && mouseY >= 180 && mouseY <= 300) {
     fill(255, 150, 50);
   } else {
     fill(200);
@@ -72,15 +77,14 @@ void draw() {
   fill(255, 255, 150);
   arc(200, 150, 150, 150, PI, TWO_PI);
 
-//원
+  // 원
   float targetX = width / 2 + sin(frameCount * 0.03) * 120;
- 
   float acceleration = (targetX - circleX) * 0.1;
   circleVX += acceleration;
   circleVX *= friction;
   circleX += circleVX;
 
-  //진동
+  // 진동
   float circleY = 60 + sin(frameCount * 0.1) * 20;
 
   // 원 그리기
@@ -104,5 +108,17 @@ void drawStars() {
       stroke(255);
     }
     point(starX[i], 60);
+  }
+}
+
+//배경색 랜덤 변경
+void mousePressed() {
+  bgColor = color(random(50, 100), 50, random(100, 180));
+}
+
+// key 초기화
+void keyPressed() {
+  if (key == 'r' || key == 'R') {
+    bgColor = color(100, 100, 120);
   }
 }
