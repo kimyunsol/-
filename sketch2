@@ -1,8 +1,8 @@
 // 배열 선언
 int[] starX = {100, 200, 300};
 float circleX = 200;
-float circleVX = 0;      
-float friction = 0.88;  
+float circleVX = 0;
+float friction = 0.88;
 float triangleAngle = 0;
 
 // 배경색 변수
@@ -12,6 +12,11 @@ boolean isShooting = false;
 float bulletX = 200;
 float bulletY = 320;
 boolean isClear = false;
+boolean isGameOver = false;
+
+// 점수 변수
+int score = 0;
+int targetScore = 3;
 
 void setup() {
   size(400, 400);
@@ -20,8 +25,8 @@ void setup() {
 
 void draw() {
   background(bgColor);
- 
-  // 사용자 정의 함수 (별)
+
+  // 별
   drawStars();
 
   // 바다 선 2개
@@ -38,23 +43,30 @@ void draw() {
     line(0, y, 400, y);
   }
 
- 
+  // 총알 발사
   if (isShooting) {
     stroke(0);
     strokeWeight(4);
     line(bulletX, bulletY, bulletX, bulletY - 15);
     bulletY -= 10;
 
-    // 발사 종료
+    // 총알이 화면 밖으로 나가면 게임 오버
     if (bulletY < 0) {
       isShooting = false;
+      isGameOver = true;
     }
 
- 
-    float circleY = 60 + sin(frameCount * 0.5) * 20;
+    // 원과 충돌 확인
+    float circleY = 60 + sin(frameCount * 0.1) * 20;
     float d = dist(bulletX, bulletY, circleX, circleY);
+
     if (d < 25) {
-      isClear = true;
+      score++;
+      isShooting = false;
+
+      if (score >= targetScore) {
+        isClear = true;
+      }
     }
   }
 
@@ -62,7 +74,8 @@ void draw() {
   noStroke();
   if (mousePressed && !isShooting) {
     fill(255, 100, 100);
-  } else if (mouseX >= 180 && mouseX <= 220 && mouseY >= 180 && mouseY <= 300) {
+  } else if (mouseX >= 180 && mouseX <= 220 &&
+             mouseY >= 180 && mouseY <= 300) {
     fill(255, 150, 50);
   } else {
     fill(200);
@@ -72,12 +85,13 @@ void draw() {
   // 삼각형
   noStroke();
   triangleAngle += 0.05;
-  float cx = 200;    
-  float cy = 170;    
 
-  float x1 = -30, y1 = 30;  
-  float x2 = 30,  y2 = 30;  
-  float x3 = 0,   y3 = -30;
+  float cx = 200;
+  float cy = 170;
+
+  float x1 = -30, y1 = 30;
+  float x2 = 30, y2 = 30;
+  float x3 = 0, y3 = -30;
 
   float cosA = cos(triangleAngle);
   float sinA = sin(triangleAngle);
@@ -93,9 +107,9 @@ void draw() {
 
   fill(220, 50, 50);
   beginShape();
-    vertex(rx1, ry1);
-    vertex(rx2, ry2);
-    vertex(rx3, ry3);
+  vertex(rx1, ry1);
+  vertex(rx2, ry2);
+  vertex(rx3, ry3);
   endShape(CLOSE);
 
   // 원호
@@ -103,14 +117,14 @@ void draw() {
   fill(255, 255, 150);
   arc(200, 150, 150, 150, PI, TWO_PI);
 
-  // 원
+  // 원 움직임
   float targetX = width / 2 + sin(frameCount * 0.04) * 120;
   float acceleration = (targetX - circleX) * 0.1;
   circleVX += acceleration;
   circleVX *= friction;
   circleX += circleVX;
 
-  // 진동
+  // 원 진동
   float circleY = 60 + sin(frameCount * 0.1) * 20;
 
   // 원 그리기
@@ -118,16 +132,38 @@ void draw() {
   fill(255, 240, 180);
   ellipse(circleX, circleY, 50, 50);
 
-  // 게임 클리어 화면 표시
+  // 점수 표시
+  fill(255);
+  textSize(20);
+  textAlign(LEFT);
+  text("Score: " + score + " / " + targetScore, 10, 25);
+
+  // 게임 클리어 화면
   if (isClear) {
     fill(0, 255, 0);
     textSize(35);
     textAlign(CENTER, CENTER);
     text("CLEAR!", width/2, height/2);
+
     textSize(15);
     fill(255);
     text("Press 'R' to Restart", width/2, height/2 + 40);
-  } else {
+  }
+
+  // 게임 오버 화면
+  else if (isGameOver) {
+    fill(255, 0, 0);
+    textSize(35);
+    textAlign(CENTER, CENTER);
+    text("GAME OVER", width/2, height/2);
+
+    textSize(15);
+    fill(255);
+    text("Press 'R' to Restart", width/2, height/2 + 40);
+  }
+
+  // 기본 화면
+  else {
     fill(255);
     textSize(30);
     textAlign(CENTER);
@@ -135,7 +171,7 @@ void draw() {
   }
 }
 
-// 사용자 정의 함수
+// 별 그리기 함수
 void drawStars() {
   strokeWeight(10);
   for (int i = 0; i < starX.length; i++) {
@@ -150,9 +186,9 @@ void drawStars() {
 
 // 발사 시작
 void mousePressed() {
-  if (!isClear && !isShooting) {
+  if (!isClear && !isGameOver && !isShooting) {
     bulletX = 200;
-    bulletY = 100;    
+    bulletY = 100;
     isShooting = true;
   }
 }
@@ -162,6 +198,12 @@ void keyPressed() {
   if (key == 'r' || key == 'R') {
     bgColor = color(100, 100, 120);
     isClear = false;
+    isGameOver = false;
     isShooting = false;
+    score = 0;
+    bulletX = 200;
+    bulletY = 100;
+    circleX = 200;
+    circleVX = 0;
   }
 }
